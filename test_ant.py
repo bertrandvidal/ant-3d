@@ -175,13 +175,11 @@ class AntTest(unittest.TestCase):
         max_movement = 10
         for _ in range(max_movement):
             ant.act(env)
-            print(ant._position)
         self.assertTrue(
             (max_movement, max_movement, max_movement)
             > ant._position
             > (-max_movement, -max_movement, -max_movement)
         )
-        print(ant._position)
 
 
 if __name__ == "__main__":

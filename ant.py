@@ -1,3 +1,5 @@
+import abc
+import random
 from collections import defaultdict
 
 
@@ -66,3 +68,37 @@ def adjacent_positions(position, increment=1):
                     y + y_increment
                 ) >= 0:
                     yield x + x_increment, y + y_increment, z + z_increment
+
+
+class Agent(abc.ABC):
+    def __init__(self, position, action_range=1):
+        """
+        :param position: (x, y, z) starting position of the Agent
+        :param action_range: how far in the Environment can the agent act
+        """
+        self._position = position
+        self._range = action_range
+
+    def act(self, environment):
+        possible_positions = self._filter_adjacent_positions(
+            adjacent_positions(self._position, self._range)
+        )
+        self._selection_action(environment, possible_positions)
+
+    def _filter_adjacent_positions(self, positions):
+        """Apply any filtering to adjacent position to fit how the Agent operate,
+        no filtering is done by defaults
+
+        :param positions: all the positions that are reachable by the Agent
+        :return: all the position the Agent can act on
+        """
+        return positions
+
+    @abc.abstractmethod
+    def _selection_action(self, environment, possible_positions):
+        pass
+
+
+class Ant(Agent):
+    def _selection_action(self, environment, possible_positions):
+        self._position = random.choice(list(possible_positions))

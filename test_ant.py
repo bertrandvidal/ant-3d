@@ -1,6 +1,6 @@
 import unittest
 
-from ant import Environment, adjacent_positions
+from ant import Ant, Environment, adjacent_positions
 
 
 class EnvTest(unittest.TestCase):
@@ -75,6 +75,14 @@ class PositionTest(unittest.TestCase):
         # 24 at the same y-coordinate as the original position
         # 25 * 2 cells under the original position
         self.assertEqual(len(list(positions)), 25 * 2 + 24 + 25 * 2)
+
+
+class AntTest(unittest.TestCase):
+    def test_random_move(self):
+        ant = Ant((0, 0, 0))
+        self.assertEqual(ant._position, (0, 0, 0))
+        ant.act(Environment)
+        self.assertNotEqual(ant._position, (0, 0, 0))
 
 
 if __name__ == "__main__":

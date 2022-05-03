@@ -64,10 +64,31 @@ def adjacent_positions(position, increment=1):
     for x_increment in range(x - increment, x + increment + 1):
         for y_increment in range(y - increment, y + increment + 1):
             for z_increment in range(z - increment, z + increment + 1):
-                if (x + x_increment, y + y_increment, z + z_increment) != position and (
-                    y + y_increment
+                if (x_increment, y_increment, z_increment) != position and (
+                    y_increment
                 ) >= 0:
-                    yield x + x_increment, y + y_increment, z + z_increment
+                    yield x_increment, y_increment, z_increment
+
+
+transformations = [
+    lambda x, y, z: (x, y + 1, z),
+    lambda x, y, z: (x, y - 1, z),
+    lambda x, y, z: (x + 1, y, z),
+    lambda x, y, z: (x - 1, y, z),
+    lambda x, y, z: (x, y, z + 1),
+    lambda x, y, z: (x, y, z - 1),
+]
+
+
+def direct_neighbors(position):
+    """Yield the position that are direct neighbors, change of one unit in one
+    coordinate at a time i.e. no diagonal.
+
+    :param position: position for which we want direct neighbors
+    :return: list of direct neighboring positions
+    """
+    for transformation in transformations:
+        yield transformation(*position)
 
 
 class Agent(abc.ABC):
@@ -81,15 +102,16 @@ class Agent(abc.ABC):
 
     def act(self, environment):
         possible_positions = self._filter_adjacent_positions(
-            adjacent_positions(self._position, self._range)
+            adjacent_positions(self._position, self._range), environment
         )
         self._selection_action(environment, possible_positions)
 
-    def _filter_adjacent_positions(self, positions):
+    def _filter_adjacent_positions(self, positions, environment):
         """Apply any filtering to adjacent position to fit how the Agent operate,
         no filtering is done by defaults
 
         :param positions: all the positions that are reachable by the Agent
+        :param environment: the environment in which the Agent evolves
         :return: all the position the Agent can act on
         """
         return positions
@@ -100,5 +122,17 @@ class Agent(abc.ABC):
 
 
 class Ant(Agent):
+    def _filter_adjacent_positions(self, positions, environment):
+        for position in positions:
+            x, y, z = position
+            # on the ground and not a cube's position
+            if y == 0 and not environment[x, y, z]:
+                yield position
+            # one of direct neighboring cells of 'position' is a cube so we can
+            # "attach" to it
+            for (xx, yy, zz) in direct_neighbors(position):
+                if environment[xx, yy, zz]:
+                    yield position
+
     def _selection_action(self, environment, possible_positions):
         self._position = random.choice(list(possible_positions))

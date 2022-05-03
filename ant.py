@@ -48,3 +48,21 @@ class Environment:
                 return self._cells[x][y][z] or None
             except ValueError:
                 raise TypeError("key should be (x, y, z, phero) or (x, y, z)")
+
+
+def adjacent_positions(position, increment=1):
+    """Yield all 3d positions that are 'increment' unit around the given position
+
+    :param position: the original (x, y, z) position
+    :param increment: how many units around the original position to use
+    :return: list of 3d positions that are "around" the given position that are not
+    under the ground (y >=0) and are not the original position
+    """
+    x, y, z = position
+    for x_increment in range(x - increment, x + increment + 1):
+        for y_increment in range(y - increment, y + increment + 1):
+            for z_increment in range(z - increment, z + increment + 1):
+                if (x + x_increment, y + y_increment, z + z_increment) != position and (
+                    y + y_increment
+                ) >= 0:
+                    yield x + x_increment, y + y_increment, z + z_increment

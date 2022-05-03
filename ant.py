@@ -122,11 +122,18 @@ class Agent(abc.ABC):
 
 
 class Ant(Agent):
+    def __init__(self, position, alpha=0.25, action_range=1):
+        super().__init__(position, action_range)
+        self._alpha = alpha
+
     def _filter_adjacent_positions(self, positions, environment):
         for position in positions:
             x, y, z = position
-            # on the ground and not a cube's position
-            if y == 0 and not environment[x, y, z]:
+            # we can't move/build to our own position or a cell that's already occupied
+            if position == self._position or environment[x, y, z]:
+                continue
+            # on the ground
+            if y == 0:
                 yield position
             # one of direct neighboring cells of 'position' is a cube so we can
             # "attach" to it
@@ -135,4 +142,12 @@ class Ant(Agent):
                     yield position
 
     def _selection_action(self, environment, possible_positions):
-        self._position = random.choice(list(possible_positions))
+        if random.random() > self._alpha:
+            position = random.choice(list(possible_positions))
+            print(f"moving to {position}")
+            self._position = position
+        else:
+            position = random.choice(list(possible_positions))
+            print(f"building to {position}")
+            x, y, z = position
+            environment[x, y, z, "pheromone"] = 12

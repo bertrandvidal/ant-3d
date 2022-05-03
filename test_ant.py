@@ -130,7 +130,7 @@ class PositionTest(unittest.TestCase):
 
 class AntTest(unittest.TestCase):
     def test_move_changes_position(self):
-        ant = Ant((0, 0, 0))
+        ant = Ant((0, 0, 0), alpha=0)
         self.assertEqual(ant._position, (0, 0, 0))
         ant.act(Environment())
         self.assertNotEqual(ant._position, (0, 0, 0))

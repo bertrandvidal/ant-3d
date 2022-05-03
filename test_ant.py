@@ -4,6 +4,14 @@ from ant import Ant, Environment, adjacent_positions, direct_neighbors
 
 
 class EnvTest(unittest.TestCase):
+    def test_pheromone_override(self):
+        env = Environment()
+        env[0, 0, 0, "pheromone-1"] = 12
+        env[0, 0, 0, "pheromone-2"] = 23
+        self.assertEqual(env[0, 0, 0, "pheromone-2"], 23)
+        self.assertEqual(env[0, 0, 0, "pheromone-1"], 12)
+        self.assertDictEqual(env[0, 0, 0], {"pheromone-1": 12, "pheromone-2": 23})
+
     def test_set_get_value(self):
         env = Environment()
         env[0, 0, 0, "pheromone-1"] = 12
@@ -131,8 +139,10 @@ class PositionTest(unittest.TestCase):
 class AntTest(unittest.TestCase):
     def test_move_changes_position(self):
         ant = Ant((0, 0, 0), alpha=0)
+        environment = Environment()
+        environment[1, 0, 0, "move"] = 12
         self.assertEqual(ant._position, (0, 0, 0))
-        ant.act(Environment())
+        ant.act(environment)
         self.assertNotEqual(ant._position, (0, 0, 0))
 
     def test_filter_adjacent_positions_has_floor_position(self):
@@ -171,7 +181,8 @@ class AntTest(unittest.TestCase):
     def test_successive_moves(self):
         ant = Ant((0, 0, 0))
         env = Environment()
-        env[1, 0, 0, "phero-1"] = 12
+        env[1, 0, 0, "move"] = 1
+        env[1, 0, 0, "build"] = 2
         max_movement = 10
         for _ in range(max_movement):
             ant.act(env)

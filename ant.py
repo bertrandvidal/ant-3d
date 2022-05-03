@@ -1,5 +1,4 @@
 import abc
-import random
 from collections import defaultdict
 
 
@@ -91,6 +90,22 @@ def direct_neighbors(position):
         yield transformation(*position)
 
 
+def pheromone_attractiveness(position, environment, pheromones):
+    """Return the attractiveness of the position for the given pheromones.
+    Attractiveness is based on the sum of the neighboring positions in the environment.
+
+    :param position: the position to consider
+    :param environment: the environment in which to calculate the attractiveness
+    :param pheromones: the names of the pheromones to compute attractiveness for
+    :return: dict of pheromone:value
+    """
+    neighbors = direct_neighbors(position)
+    return {
+        phero: sum(environment[x, y, z, phero] or 0 for x, y, z in neighbors)
+        for phero in pheromones
+    }
+
+
 class Agent(abc.ABC):
     def __init__(self, position, action_range=1):
         """
@@ -122,9 +137,10 @@ class Agent(abc.ABC):
 
 
 class Ant(Agent):
-    def __init__(self, position, alpha=0.25, action_range=1):
+    def __init__(self, position, alpha=0.25, action_range=1, pheromones=None):
         super().__init__(position, action_range)
         self._alpha = alpha
+        self._pheromones = pheromones or ["move", "build"]
 
     def _filter_adjacent_positions(self, positions, environment):
         for position in positions:
@@ -142,12 +158,25 @@ class Ant(Agent):
                     yield position
 
     def _selection_action(self, environment, possible_positions):
-        if random.random() > self._alpha:
-            position = random.choice(list(possible_positions))
-            print(f"moving to {position}")
-            self._position = position
+        # TODO(bvidal): handle possible_positions being empty
+        positions_pheromone = {
+            pos: pheromone_attractiveness(pos, environment, self._pheromones)
+            for pos in possible_positions
+        }
+        # TODO(bvidal): the phero for "build" are always 0
+        # most attractive position is the one with the highest of any pheromone
+        # TODO(bvidal): using the last element in the list will push us to inf, inf, inf
+        (most_attractive_position, pheros) = sorted(
+            positions_pheromone.items(), key=lambda item: max(item[1].values())
+        )[-1]
+        highest_pheromone = sorted(pheros, key=lambda k: pheros[k])[-1]
+        if highest_pheromone == "move":
+            print(f"moving to {most_attractive_position}")
+            self._position = most_attractive_position
+        elif highest_pheromone == "build":
+            print(f"building to {most_attractive_position}")
+            x, y, z = most_attractive_position
+            for phero in self._pheromones:
+                environment[x, y, z, phero] = 1
         else:
-            position = random.choice(list(possible_positions))
-            print(f"building to {position}")
-            x, y, z = position
-            environment[x, y, z, "pheromone"] = 12
+            raise NotImplementedError()

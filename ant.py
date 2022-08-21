@@ -206,5 +206,9 @@ class Ant(Agent):
                 if max(pheros.values()) == max_phero_value
             ]
         )
-        highest_pheromone = sorted(pheros, key=lambda k: pheros[k])[-1]
+        # randomly pick the pheromone, at the current position, that has the highest
+        # value
+        highest_pheromone = choice(
+            [k for k, v in pheros.items() if v == max_phero_value]
+        )
         return highest_pheromone, most_attractive_position

@@ -81,14 +81,13 @@ transformations = [
 
 
 def direct_neighbors(position):
-    """Yield the position that are direct neighbors, change of one unit in one
+    """Return the positions that are direct neighbors, change of one unit in one
     coordinate at a time i.e. no diagonal.
 
     :param position: position for which we want direct neighbors
     :return: list of direct neighboring positions
     """
-    for transformation in transformations:
-        yield transformation(*position)
+    return [transformation(*position) for transformation in transformations]
 
 
 def pheromone_attractiveness(position, environment, pheromones):

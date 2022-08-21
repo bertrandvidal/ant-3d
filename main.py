@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from ant import Ant, Environment
 
 if __name__ == "__main__":
@@ -16,4 +18,11 @@ if __name__ == "__main__":
             ant.act(env)
         env.evaporate()
 
-    env.export("./export.csv")
+    actions = defaultdict(int)
+    for ant in ants:
+        for action in ant._actions:
+            actions[action] += 1
+
+    print(actions)
+
+    env.export("./export.csv", pheromone="build")

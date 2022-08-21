@@ -63,17 +63,18 @@ class Environment:
                     for phero, val in v3.items():
                         self._cells[k1][k2][k3][phero] = max(0, val - value)
 
-    def export(self, path):
+    def export(self, path, pheromone):
         """Export the environment as a CSV file
 
         :param path: the path to export the file
+        :param pheromone: only position having this pheromone will be exported
         """
         with open(path, "w") as f:
             writer = csv.writer(f)
             for x, v1 in self._cells.items():
                 for y, v2 in v1.items():
                     for z, v3 in v2.items():
-                        if v3:
+                        if pheromone in v3:
                             writer.writerow((x, y, z))
 
 

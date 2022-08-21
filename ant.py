@@ -173,7 +173,6 @@ class Ant(Agent):
             )
             return
         # TODO(bvidal): the phero for "build" are always 0
-        # most attractive position is the one with the highest of any pheromone
 
         (
             highest_pheromone,

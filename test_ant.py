@@ -55,6 +55,26 @@ class EnvTest(unittest.TestCase):
         with self.assertRaises(TypeError):
             env[0, 1, 2, 3, 4] = 12
 
+    def test_evaporate(self):
+        env = Environment()
+        env[0, 0, 0, "pheromone-1"] = 1
+        env[0, 0, 0, "pheromone-2"] = 1
+        env[1, 0, 0, "pheromone-1"] = 1
+        env.evaporate()
+        self.assertAlmostEqual(env[0, 0, 0, "pheromone-1"], 0.95)
+        self.assertAlmostEqual(env[0, 0, 0, "pheromone-2"], 0.95)
+        self.assertAlmostEqual(env[1, 0, 0, "pheromone-1"], 0.95)
+
+    def test_evaporate_zero_capped(self):
+        env = Environment()
+        env[0, 0, 0, "pheromone-1"] = 1
+        env[0, 0, 0, "pheromone-2"] = 1
+        env[1, 0, 0, "pheromone-1"] = 1
+        env.evaporate(value=2)
+        self.assertEqual(env[0, 0, 0, "pheromone-1"], 0)
+        self.assertEqual(env[0, 0, 0, "pheromone-2"], 0)
+        self.assertEqual(env[1, 0, 0, "pheromone-1"], 0)
+
 
 class PositionTest(unittest.TestCase):
     def test_len_direct_neighbors(self):

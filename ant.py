@@ -51,6 +51,17 @@ class Environment:
             except ValueError:
                 raise TypeError("key should be (x, y, z, phero) or (x, y, z)")
 
+    def evaporate(self, value=0.05):
+        """For all positions, evaporate all pheromones by the given value. Capped at 0.
+
+        :param value: how much to remove from each pheromones
+        """
+        for k1, v1 in self._cells.items():
+            for k2, v2 in v1.items():
+                for k3, v3 in v2.items():
+                    for phero, val in v3.items():
+                        self._cells[k1][k2][k3][phero] = max(0, val - value)
+
 
 def adjacent_positions(position, increment=1):
     """Yield all 3d positions that are 'increment' unit around the given position

@@ -1,3 +1,5 @@
+import os
+import tempfile
 import unittest
 
 from ant import Ant, Environment, adjacent_positions, direct_neighbors
@@ -74,6 +76,30 @@ class EnvTest(unittest.TestCase):
         self.assertEqual(env[0, 0, 0, "pheromone-1"], 0)
         self.assertEqual(env[0, 0, 0, "pheromone-2"], 0)
         self.assertEqual(env[1, 0, 0, "pheromone-1"], 0)
+
+    def test_export(self):
+        env = Environment()
+        env[0, 0, 0, "pheromone-1"] = 1
+        env[0, 0, 0, "pheromone-2"] = 1
+        env[1, 0, 0, "pheromone-1"] = 1
+        env[0, 1, 0, "pheromone-1"] = 1
+        env[0, 0, 1, "pheromone-1"] = 1
+        path = os.path.join(tempfile.gettempdir(), "test_export.csv")
+        try:
+            env.export(path)
+            with open(path, "r") as f:
+                lines = [line.strip("\n") for line in f.readlines()]
+            self.assertEqual(len(lines), 4)
+            for line in [
+                "0,0,0",
+                "1,0,0",
+                "0,1,0",
+                "0,0,1",
+            ]:
+                self.assertIn(line, lines)
+        finally:
+            if os.path.isfile(path):
+                os.remove(path)
 
 
 class PositionTest(unittest.TestCase):

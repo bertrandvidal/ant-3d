@@ -1,4 +1,5 @@
 import abc
+import csv
 from collections import defaultdict
 from random import choice, randint
 
@@ -61,6 +62,19 @@ class Environment:
                 for k3, v3 in v2.items():
                     for phero, val in v3.items():
                         self._cells[k1][k2][k3][phero] = max(0, val - value)
+
+    def export(self, path):
+        """Export the environment as a CSV file
+
+        :param path: the path to export the file
+        """
+        with open(path, "w") as f:
+            writer = csv.writer(f)
+            for x, v1 in self._cells.items():
+                for y, v2 in v1.items():
+                    for z, v3 in v2.items():
+                        if v3:
+                            writer.writerow((x, y, z))
 
 
 def adjacent_positions(position, increment=1):

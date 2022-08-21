@@ -178,9 +178,9 @@ class Ant(Agent):
             # if there's no available positions, randomly positions the ant on
             # the floor
             self._position = (
-                randint(0, self._position[0]),
+                randint(0, self._position[0] + 1),
                 0,
-                randint(0, self._position[2]),
+                randint(0, self._position[2] + 1),
             )
             return
         # TODO(bvidal): the phero for "build" are always 0

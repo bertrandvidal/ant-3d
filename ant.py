@@ -197,7 +197,6 @@ class Ant(Agent):
                 randint(0, abs(self._position[2]) + 1),
             )
             return
-        # TODO(bvidal): the phero for "build" are always 0
 
         (
             most_attractive_position,

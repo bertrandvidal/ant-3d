@@ -192,6 +192,13 @@ class AntTest(unittest.TestCase):
             > (-max_movement, -max_movement, -max_movement)
         )
 
+    def test_position_changed_when_no_possible_positions(self):
+        # being in y = 2 in an empty env makes it impossible to move
+        ant = Ant((0, 2, 0), pheromones=["move"])
+        env = Environment()
+        ant.act(env)
+        self.assertNotEqual(ant._position, (0, 1, 0))
+
 
 if __name__ == "__main__":
     unittest.main()

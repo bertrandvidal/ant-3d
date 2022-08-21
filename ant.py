@@ -1,5 +1,6 @@
 import abc
 from collections import defaultdict
+from random import randint
 
 
 class Environment:
@@ -158,11 +159,19 @@ class Ant(Agent):
                     yield position
 
     def _selection_action(self, environment, possible_positions):
-        # TODO(bvidal): handle possible_positions being empty
         positions_pheromone = {
             pos: pheromone_attractiveness(pos, environment, self._pheromones)
             for pos in possible_positions
         }
+        if not positions_pheromone:
+            # if there's no available positions, randomly positions the ant on
+            # the floor
+            self._position = (
+                randint(0, self._position[0]),
+                0,
+                randint(0, self._position[2]),
+            )
+            return
         # TODO(bvidal): the phero for "build" are always 0
         # most attractive position is the one with the highest of any pheromone
         # TODO(bvidal): using the last element in the list will push us to inf, inf, inf

@@ -206,11 +206,14 @@ class AntTest(unittest.TestCase):
             (0, 1, 0): {"move": 2, "build": 1},
             (0, 0, 1): {"move": 0, "build": 1},
         }
-        highest_pheromone, most_attractive_position = ant._get_most_attractive_position(
-            positions_pheromone
-        )
+        (
+            most_attractive_position,
+            highest_pheromone,
+            phero_value,
+        ) = ant._get_most_attractive_position(positions_pheromone)
         self.assertEqual(most_attractive_position, (0, 1, 0))
         self.assertEqual(highest_pheromone, "move")
+        self.assertEqual(phero_value, 2)
 
     def test_get_random_most_attractive_position(self):
         ant = Ant((0, 0, 0))
@@ -219,11 +222,14 @@ class AntTest(unittest.TestCase):
             (0, 1, 0): {"move": 2, "build": 1},
             (0, 0, 1): {"move": 2, "build": 1},
         }
-        highest_pheromone, most_attractive_position = ant._get_most_attractive_position(
-            positions_pheromone
-        )
+        (
+            most_attractive_position,
+            highest_pheromone,
+            phero_value,
+        ) = ant._get_most_attractive_position(positions_pheromone)
         self.assertIn(most_attractive_position, [(0, 1, 0), (0, 0, 1)])
         self.assertEqual(highest_pheromone, "move")
+        self.assertEqual(phero_value, 2)
 
     def test_ant_only_interact_with_move_build_pheromones(self):
         ant = Ant((0, 0, 0), pheromones=["unknown-phero"])
@@ -238,6 +244,16 @@ class AntTest(unittest.TestCase):
         for _ in range(10):
             ant.act(environment)
         self.assertNotIn("build", ant._actions)
+
+    def test_ant_build_and_move(self):
+        ant = Ant((0, 0, 0))
+        environment = Environment()
+        environment[1, 0, 0, "move"] = 1
+        environment[1, 0, 0, "build"] = 1
+        for _ in range(25):
+            ant.act(environment)
+        self.assertIn("build", ant._actions)
+        self.assertIn("move", ant._actions)
 
 
 if __name__ == "__main__":

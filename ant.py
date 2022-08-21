@@ -175,8 +175,9 @@ class Ant(Agent):
         # TODO(bvidal): the phero for "build" are always 0
 
         (
-            highest_pheromone,
             most_attractive_position,
+            highest_pheromone,
+            phero_attractiveness,
         ) = self._get_most_attractive_position(positions_pheromone)
 
         if highest_pheromone == "move":
@@ -186,7 +187,7 @@ class Ant(Agent):
         elif highest_pheromone == "build":
             x, y, z = most_attractive_position
             # we cannot build if there are nothing around us/build phero value = 0
-            if environment[x, y, z, highest_pheromone] is not None:
+            if phero_attractiveness != 0:
                 print(f"building to {most_attractive_position}")
                 self._actions.append("build")
                 for phero in self._pheromones:
@@ -197,7 +198,7 @@ class Ant(Agent):
         :param positions_pheromone: (position, {phero: value} for all valid position
         the agent can reach/act on
         :return: a randomly chosen position which has the highest pheromone value as
-        a tuple (phero-value, position)
+        a tuple (position, highest pheromone, value of pheromone attractiveness)
         """
         most_attractive_positions = sorted(
             positions_pheromone.items(), key=lambda item: max(item[1].values())
@@ -216,4 +217,4 @@ class Ant(Agent):
         highest_pheromone = choice(
             [k for k, v in pheros.items() if v == max_phero_value]
         )
-        return highest_pheromone, most_attractive_position
+        return most_attractive_position, highest_pheromone, max_phero_value

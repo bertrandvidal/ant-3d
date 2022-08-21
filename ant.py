@@ -140,6 +140,7 @@ class Ant(Agent):
     def __init__(self, position, alpha=0.25, action_range=1, pheromones=None):
         super().__init__(position, action_range)
         self._alpha = alpha
+        self._actions = []
         self._pheromones = pheromones or ["move", "build"]
 
     def _filter_adjacent_positions(self, positions, environment):
@@ -181,11 +182,15 @@ class Ant(Agent):
         if highest_pheromone == "move":
             print(f"moving to {most_attractive_position}")
             self._position = most_attractive_position
+            self._actions.append("move")
         elif highest_pheromone == "build":
-            print(f"building to {most_attractive_position}")
             x, y, z = most_attractive_position
-            for phero in self._pheromones:
-                environment[x, y, z, phero] = 1
+            # we cannot build if there are nothing around us/build phero value = 0
+            if environment[x, y, z, highest_pheromone] is not None:
+                print(f"building to {most_attractive_position}")
+                self._actions.append("build")
+                for phero in self._pheromones:
+                    environment[x, y, z, phero] = 1
 
     def _get_most_attractive_position(self, positions_pheromone):
         """

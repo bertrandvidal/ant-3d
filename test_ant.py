@@ -232,6 +232,13 @@ class AntTest(unittest.TestCase):
         ant.act(environment)
         self.assertEqual(ant._position, (0, 0, 0))
 
+    def test_ant_no_build_on_zero_phero(self):
+        ant = Ant((0, 0, 0))
+        environment = Environment()
+        for _ in range(10):
+            ant.act(environment)
+        self.assertNotIn("build", ant._actions)
+
 
 if __name__ == "__main__":
     unittest.main()

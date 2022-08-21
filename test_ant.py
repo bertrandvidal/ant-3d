@@ -199,6 +199,32 @@ class AntTest(unittest.TestCase):
         ant.act(env)
         self.assertNotEqual(ant._position, (0, 1, 0))
 
+    def test_get_most_attractive_position(self):
+        ant = Ant((0, 0, 0))
+        positions_pheromone = {
+            (1, 0, 0): {"move": 1, "build": 1},
+            (0, 1, 0): {"move": 2, "build": 1},
+            (0, 0, 1): {"move": 0, "build": 1},
+        }
+        highest_pheromone, most_attractive_position = ant._get_most_attractive_position(
+            positions_pheromone
+        )
+        self.assertEqual(most_attractive_position, (0, 1, 0))
+        self.assertEqual(highest_pheromone, "move")
+
+    def test_get_random_most_attractive_position(self):
+        ant = Ant((0, 0, 0))
+        positions_pheromone = {
+            (1, 0, 0): {"move": 1, "build": 1},
+            (0, 1, 0): {"move": 2, "build": 1},
+            (0, 0, 1): {"move": 2, "build": 1},
+        }
+        highest_pheromone, most_attractive_position = ant._get_most_attractive_position(
+            positions_pheromone
+        )
+        self.assertIn(most_attractive_position, [(0, 1, 0), (0, 0, 1)])
+        self.assertEqual(highest_pheromone, "move")
+
 
 if __name__ == "__main__":
     unittest.main()

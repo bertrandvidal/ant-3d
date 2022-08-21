@@ -1,6 +1,6 @@
 import abc
 from collections import defaultdict
-from random import randint
+from random import choice, randint
 
 
 class Environment:
@@ -174,11 +174,12 @@ class Ant(Agent):
             return
         # TODO(bvidal): the phero for "build" are always 0
         # most attractive position is the one with the highest of any pheromone
-        # TODO(bvidal): using the last element in the list will push us to inf, inf, inf
-        (most_attractive_position, pheros) = sorted(
-            positions_pheromone.items(), key=lambda item: max(item[1].values())
-        )[-1]
-        highest_pheromone = sorted(pheros, key=lambda k: pheros[k])[-1]
+
+        (
+            highest_pheromone,
+            most_attractive_position,
+        ) = self._get_most_attractive_position(positions_pheromone)
+
         if highest_pheromone == "move":
             print(f"moving to {most_attractive_position}")
             self._position = most_attractive_position
@@ -189,3 +190,25 @@ class Ant(Agent):
                 environment[x, y, z, phero] = 1
         else:
             raise NotImplementedError()
+
+    def _get_most_attractive_position(self, positions_pheromone):
+        """
+        :param positions_pheromone: (position, {phero: value} for all valid position
+        the agent can reach/act on
+        :return: a randomly chosen position which has the highest pheromone value as
+        a tuple (phero-value, position)
+        """
+        most_attractive_positions = sorted(
+            positions_pheromone.items(), key=lambda item: max(item[1].values())
+        )
+        max_phero_value = max(most_attractive_positions[-1][1].values())
+        # randomly select any position that has a pheromone value equal to the max
+        (most_attractive_position, pheros) = choice(
+            [
+                (pos, pheros)
+                for pos, pheros in most_attractive_positions
+                if max(pheros.values()) == max_phero_value
+            ]
+        )
+        highest_pheromone = sorted(pheros, key=lambda k: pheros[k])[-1]
+        return highest_pheromone, most_attractive_position

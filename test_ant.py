@@ -225,6 +225,13 @@ class AntTest(unittest.TestCase):
         self.assertIn(most_attractive_position, [(0, 1, 0), (0, 0, 1)])
         self.assertEqual(highest_pheromone, "move")
 
+    def test_ant_only_interact_with_move_build_pheromones(self):
+        ant = Ant((0, 0, 0), pheromones=["unknown-phero"])
+        environment = Environment()
+        environment[1, 1, 1, "unknown-phero"] = 1
+        ant.act(environment)
+        self.assertEqual(ant._position, (0, 0, 0))
+
 
 if __name__ == "__main__":
     unittest.main()

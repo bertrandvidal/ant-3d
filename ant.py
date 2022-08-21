@@ -187,8 +187,6 @@ class Ant(Agent):
             x, y, z = most_attractive_position
             for phero in self._pheromones:
                 environment[x, y, z, phero] = 1
-        else:
-            raise NotImplementedError()
 
     def _get_most_attractive_position(self, positions_pheromone):
         """
